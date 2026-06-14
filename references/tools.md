@@ -125,7 +125,8 @@ Inferência: prazo único → `ate`; dia pontual → `em`; janela → `entre`; s
 Settáveis: `pending` · `in_progress` · `completed` · `blocked` · `draft`.
 **`overdue` é derivado** (calculado quando `dueDate < hoje`) — não settável, mas **filtrável** no `status` de `list_my_tasks`/`list_workspace_tasks`.
 O backend cria toda tarefa como `draft`; a tool já faz o PATCH para `pending` (ou para o `status` passado) em **todos os modos**, inclusive cards de plano. Em modo plano o que é ignorado são `priority`/`scheduleMode`/datas/`assignee` (rejeitados na chamada — ajuste via `update_task`/`set_task_*` depois).
-⚠️ Cards de plano saem com `createdBy: null` → `delete_task` individual é **rejeitado** pela API; limpe via `delete_plan` (cascade) ou `detach_task_from_plan` antes.
+⚠️ Cards de plano saem com `createdBy: null`. `delete_task` neles só é rejeitado se o caller **não** for criador nem admin do workspace — admin tem bypass e o delete passa. Pra limpar um plano inteiro prefira `delete_plan` (cascade); pra preservar tarefas, `detach_task_from_plan`.
+⚠️ **Bug de backend conhecido:** `set_task_schedule` (ou `update_task` com `scheduleMode`+datas) num **card de plano** retorna **HTTP 500** e pode correlacionar com perda do card/plano. Em card de plano, hoje só ajuste `priority`/`title`/`description` via `update_task`. Pra agendar, crie a task standalone-de-workspace com o prazo e use `attach_task_to_plan`.
 
 ### tipos de tarefa
 - **Standalone** (Minhas Tarefas): omita `workspaceId`. Assignee = caller fixo (não customizável; `set_task_assignee` não se aplica).
