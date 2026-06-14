@@ -29,7 +29,7 @@ strings UUID. Datas sempre `YYYY-MM-DD`.
 
 | Tool | Propósito | Params |
 |---|---|---|
-| `create_task` | Cria tarefa (standalone, workspace ou plano). Nasce em `draft`. | `title` (string, req), `description` (markdown, opt), `workspaceId` (uuid, opt), `planId` (uuid, opt), `assignee` ({userId}\|{email}\|null, opt), `scheduleMode` (ate\|entre\|em\|sem_prazo\|urgente, opt), `startAt` (YYYY-MM-DD, opt), `dueDate` (YYYY-MM-DD, opt), `priority` (low\|medium\|high\|critical, opt), `status` (pending\|in_progress\|completed\|blocked\|draft, opt) |
+| `create_task` | Cria tarefa (standalone, workspace ou plano). Standalone/workspace saem `pending` por default; cards de plano nascem `draft`. | `title` (string, req), `description` (markdown, opt), `workspaceId` (uuid, opt), `planId` (uuid, opt), `assignee` ({userId}\|{email}\|null, opt), `scheduleMode` (ate\|entre\|em\|sem_prazo\|urgente, opt), `startAt` (YYYY-MM-DD, opt), `dueDate` (YYYY-MM-DD, opt), `priority` (low\|medium\|high\|critical, opt), `status` (pending\|in_progress\|completed\|blocked\|draft, opt) |
 | `update_task` | Edita campos da tarefa. `description`/`startAt`/`dueDate` aceitam `null` para limpar. | `taskId` (uuid, req), `title` (opt), `description` (markdown\|null, opt), `priority` (opt), `scheduleMode` (opt), `startAt` (YYYY-MM-DD\|null, opt), `dueDate` (YYYY-MM-DD\|null, opt) |
 | `set_task_status` | Muda o status. `overdue` é derivado (não settável). | `taskId` (uuid, req), `status` (pending\|in_progress\|completed\|blocked\|draft, req) |
 | `set_task_assignee` | Reatribui a tarefa. **Só workspace tasks.** | `taskId` (uuid, req), `assignee` ({userId}\|{email}\|null, req) |
@@ -123,7 +123,7 @@ Inferência: prazo único → `ate`; dia pontual → `em`; janela → `entre`; s
 ### status
 Settáveis: `pending` · `in_progress` · `completed` · `blocked` · `draft`.
 **`overdue` é derivado** (calculado quando `dueDate < hoje`) — não settável.
-⚠️ Toda tarefa nasce em `draft` — para outro estado, chame `set_task_status` (ou passe `status` no `create_task`).
+O backend cria toda tarefa como `draft`; em standalone/workspace a tool já faz o PATCH para `pending` (ou para o `status` passado). ⚠️ **Cards de plano** (`planId`) ficam `draft` se você não passar `status` explícito — `priority`/`scheduleMode`/datas/`assignee` são rejeitados em modo plano (ajuste via `update_task`/`set_task_*` depois).
 
 ### tipos de tarefa
 - **Standalone** (Minhas Tarefas): omita `workspaceId`. Assignee = caller fixo (não customizável; `set_task_assignee` não se aplica).

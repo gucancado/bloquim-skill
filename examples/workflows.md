@@ -12,11 +12,11 @@ Transcrições curtas dos fluxos-âncora. `→` indica chamada de tool. Os IDs s
 
 > **User:** isso
 
-→ `create_task` `{ title: "Enviar proposta revisada pro cliente", priority: "high", scheduleMode: "ate", dueDate: "2026-06-20", status: "pending" }`
+→ `create_task` `{ title: "Enviar proposta revisada pro cliente", priority: "high", scheduleMode: "ate", dueDate: "2026-06-20" }`
 
 **Claude:** Registrado em Minhas Tarefas — alta, vence sex 20/06.
 
-*(Note: passei `status: "pending"` porque a tarefa nasceria `draft` por default.)*
+*(Note: standalone já sai `pending` por default — não precisa passar `status`. Só cards de plano nascem `draft`.)*
 
 ---
 

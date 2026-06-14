@@ -42,7 +42,7 @@ e os fluxos. **Schema detalhado de cada tool:** `references/tools.md`.
 
 - **priority:** `low` · `medium` (default) · `high` · `critical`. "urgente"→`critical`, "importante"→`high`.
 - **scheduleMode + datas** (datas em `YYYY-MM-DD`): `ate` (só `dueDate`) · `entre` (`startAt`+`dueDate`) · `em` (dia pontual) · `sem_prazo` · `urgente` (sem datas, pinada no topo).
-- **status:** `pending`/`in_progress`/`completed`/`blocked`/`draft`. `overdue` é derivado. ⚠️ **Tarefa nasce `draft`** — para outro estado, passe `status` no `create_task` ou chame `set_task_status`.
+- **status:** `pending`/`in_progress`/`completed`/`blocked`/`draft`. `overdue` é derivado. Standalone/workspace: `create_task` já entrega `pending` por default (a tool faz o PATCH pós-criação). ⚠️ **Cards de plano** (`planId`) nascem `draft` — passe `status` no `create_task` ou chame `set_task_status` depois.
 - **Onde a tarefa vive:** sem `workspaceId` → standalone (Minhas Tarefas, assignee = você). Com `workspaceId` → workspace (assignee customizável). Com `planId` → dentro de um plano.
 - **assignee** (só workspace): `{userId}` | `{email}` (resolve entre membros) | `null` | omitir (= você).
 - **Destrutivas exigem `confirm: true`:** `delete_task`, `clear_task_checklist`, `delete_plan`.
@@ -72,7 +72,7 @@ Transcrições completas em `examples/workflows.md`. Resumo:
 ## Anti-padrões
 
 - ❌ Inventar `taskId`/`workspaceId`/tool. Sempre liste/busque primeiro; o toolset é fixo (35 tools).
-- ❌ Esquecer que a tarefa nasce `draft` (vai parecer "sumida" de listas filtradas por status ativo).
+- ❌ Esquecer que **cards de plano** nascem `draft` (vão parecer "sumidos" de listas filtradas por status ativo) — passe `status` ou PATCHe depois.
 - ❌ `set_task_assignee` em tarefa standalone (só workspace).
 - ❌ Omitir `confirm: true` em delete/clear (a chamada falha).
 - ❌ Esperar paginação em `search_tasks` (trunca em 20 — refine a query).
