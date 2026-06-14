@@ -51,6 +51,7 @@ git clone https://github.com/gucancado/bloquim-skill.git ~/.claude/skills/bloqui
 | [`SKILL.md`](SKILL.md) | Skill principal: trigger, mapa das tools, convenções, captura proativa, workflows, anti-padrões. |
 | [`references/tools.md`](references/tools.md) | Catálogo completo das 35 tools — params, enums, roteamento automático. Lido sob demanda. |
 | [`examples/workflows.md`](examples/workflows.md) | Transcrições de exemplo dos 5 fluxos-âncora. |
+| [`USE-CASES.md`](USE-CASES.md) | Casos de uso + frases-gatilho pra testar e roteiro de onboarding. |
 
 ## Como funciona
 
