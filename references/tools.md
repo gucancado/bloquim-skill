@@ -18,8 +18,8 @@ strings UUID. Datas sempre `YYYY-MM-DD`.
 
 | Tool | Propósito | Params |
 |---|---|---|
-| `list_my_tasks` | Lista as tarefas do usuário (standalone + workspaces). | `scope` (today\|week\|all, opt), `status` (array, opt), `workspaceId` (uuid, opt) |
-| `list_workspace_tasks` | Lista tarefas de um workspace. | `workspaceId` (uuid, req), `assignedTo` (array, opt), `status` (array, opt), `scope` (today\|week\|all, opt) |
+| `list_my_tasks` | Lista as tarefas do usuário (standalone + workspaces). | `scope` (today\|week\|all, opt, **def today**), `status` (array, opt; aceita `overdue`), `workspaceId` (uuid, opt) |
+| `list_workspace_tasks` | Lista tarefas de um workspace. | `workspaceId` (uuid, req), `assignedTo` (array de uuid e/ou `unassigned`, opt), `status` (array, opt; aceita `overdue`), `scope` (today\|week\|all, opt, **def all**) |
 | `get_task` | Detalhes completos de uma tarefa (roteia standalone/workspace automaticamente). | `taskId` (uuid, req) |
 | `search_tasks` | Busca tarefas por texto em título+descrição. **Máx 20 resultados.** | `query` (string ≥2, req), `workspaceId` (uuid, opt), `status` (array, opt) |
 | `list_task_comments` | Lista comentários de uma tarefa. | `taskId` (uuid, req) |
@@ -29,7 +29,7 @@ strings UUID. Datas sempre `YYYY-MM-DD`.
 
 | Tool | Propósito | Params |
 |---|---|---|
-| `create_task` | Cria tarefa (standalone, workspace ou plano). Standalone/workspace saem `pending` por default; cards de plano nascem `draft`. | `title` (string, req), `description` (markdown, opt), `workspaceId` (uuid, opt), `planId` (uuid, opt), `assignee` ({userId}\|{email}\|null, opt), `scheduleMode` (ate\|entre\|em\|sem_prazo\|urgente, opt), `startAt` (YYYY-MM-DD, opt), `dueDate` (YYYY-MM-DD, opt), `priority` (low\|medium\|high\|critical, opt), `status` (pending\|in_progress\|completed\|blocked\|draft, opt) |
+| `create_task` | Cria tarefa (standalone, workspace ou plano). Sai `pending` por default em todos os modos. ⚠️ `dueDate`/`startAt` sem `scheduleMode` são descartados (default `sem_prazo`). Em modo plano (`planId`), `priority`/`scheduleMode`/datas/`assignee` são rejeitados. | `title` (string, req), `description` (markdown, opt), `workspaceId` (uuid, opt), `planId` (uuid, opt), `assignee` ({userId}\|{email}\|null, opt), `scheduleMode` (ate\|entre\|em\|sem_prazo\|urgente, opt), `startAt` (YYYY-MM-DD, opt), `dueDate` (YYYY-MM-DD, opt), `priority` (low\|medium\|high\|critical, opt), `status` (pending\|in_progress\|completed\|blocked\|draft, opt) |
 | `update_task` | Edita campos da tarefa. `description`/`startAt`/`dueDate` aceitam `null` para limpar. | `taskId` (uuid, req), `title` (opt), `description` (markdown\|null, opt), `priority` (opt), `scheduleMode` (opt), `startAt` (YYYY-MM-DD\|null, opt), `dueDate` (YYYY-MM-DD\|null, opt) |
 | `set_task_status` | Muda o status. `overdue` é derivado (não settável). | `taskId` (uuid, req), `status` (pending\|in_progress\|completed\|blocked\|draft, req) |
 | `set_task_assignee` | Reatribui a tarefa. **Só workspace tasks.** | `taskId` (uuid, req), `assignee` ({userId}\|{email}\|null, req) |
@@ -66,7 +66,7 @@ strings UUID. Datas sempre `YYYY-MM-DD`.
 | `list_task_attachments` | Lista anexos da tarefa. | `taskId` (uuid, req) |
 | `remove_task_attachment` | Remove anexo (soft-delete). | `taskId` (uuid, req), `attachmentId` (uuid, req) |
 
-## Planos / mapas de ação (7)
+## Planos / mapas de ação (8)
 
 | Tool | Propósito | Params |
 |---|---|---|
@@ -79,8 +79,6 @@ strings UUID. Datas sempre `YYYY-MM-DD`.
 | `attach_task_to_plan` | Anexa task existente (sem plano) a um plano. | `workspaceId` (uuid, req), `planId` (uuid, req), `taskId` (uuid, req) |
 | `detach_task_from_plan` | Remove task do plano (volta standalone-workspace). | `workspaceId` (uuid, req), `planId` (uuid, req), `taskId` (uuid, req) |
 
-> Planos somam 8 linhas acima (7 + `detach_task_from_plan`). Total geral abaixo.
-
 ## Workspaces (4)
 
 | Tool | Propósito | Params |
@@ -89,6 +87,8 @@ strings UUID. Datas sempre `YYYY-MM-DD`.
 | `list_workspace_members` | Lista membros (userId/name/email/role/classes). | `workspaceId` (uuid, req) |
 | `create_workspace` | Cria workspace (caller vira admin). | `name` (string ≥1, req) |
 | `add_workspace_member` | Adiciona membro por email (role fixo `editor`). | `workspaceId` (uuid, req), `email` (email, req) |
+
+> **Não há `delete_workspace` no MCP** — criar workspace é one-way; apagar só pela UI do Bloquim.
 
 **Total: 35 tools** — Auth 1, Tasks-read 6, Tasks-write 5, Delete/move 2, Comments 1, Checklist 5, Attachments 3, Plans 8, Workspaces 4.
 
@@ -108,6 +108,7 @@ Inferência: "urgente/pra já" → `critical`; "importante/prioritário" → `hi
 
 ### scheduleMode (modalidade de prazo) + datas
 Datas em `YYYY-MM-DD` (campo DATE, não timestamp).
+⚠️ **Datas exigem `scheduleMode`**: em `create_task`, passar `dueDate`/`startAt` sem `scheduleMode` faz as datas serem **silenciosamente descartadas** (default `sem_prazo`).
 
 | Modo | Semântica | Datas exigidas |
 |---|---|---|
@@ -122,8 +123,9 @@ Inferência: prazo único → `ate`; dia pontual → `em`; janela → `entre`; s
 
 ### status
 Settáveis: `pending` · `in_progress` · `completed` · `blocked` · `draft`.
-**`overdue` é derivado** (calculado quando `dueDate < hoje`) — não settável.
-O backend cria toda tarefa como `draft`; em standalone/workspace a tool já faz o PATCH para `pending` (ou para o `status` passado). ⚠️ **Cards de plano** (`planId`) ficam `draft` se você não passar `status` explícito — `priority`/`scheduleMode`/datas/`assignee` são rejeitados em modo plano (ajuste via `update_task`/`set_task_*` depois).
+**`overdue` é derivado** (calculado quando `dueDate < hoje`) — não settável, mas **filtrável** no `status` de `list_my_tasks`/`list_workspace_tasks`.
+O backend cria toda tarefa como `draft`; a tool já faz o PATCH para `pending` (ou para o `status` passado) em **todos os modos**, inclusive cards de plano. Em modo plano o que é ignorado são `priority`/`scheduleMode`/datas/`assignee` (rejeitados na chamada — ajuste via `update_task`/`set_task_*` depois).
+⚠️ Cards de plano saem com `createdBy: null` → `delete_task` individual é **rejeitado** pela API; limpe via `delete_plan` (cascade) ou `detach_task_from_plan` antes.
 
 ### tipos de tarefa
 - **Standalone** (Minhas Tarefas): omita `workspaceId`. Assignee = caller fixo (não customizável; `set_task_assignee` não se aplica).

@@ -26,12 +26,12 @@ Transcrições curtas dos fluxos-âncora. `→` indica chamada de tool. Os IDs s
 
 → `list_workspaces` *(acha o workspace "Produto" → `ws-111`)*
 → `create_plan` `{ workspaceId: "ws-111", name: "Lançamento v2" }` → `plan-222`
-→ `create_task` `{ workspaceId: "ws-111", planId: "plan-222", title: "Escrever changelog", status: "pending" }`
-→ `create_task` `{ workspaceId: "ws-111", planId: "plan-222", title: "Gravar vídeo demo", status: "pending" }`
-→ `create_task` `{ workspaceId: "ws-111", planId: "plan-222", title: "Agendar post de lançamento", status: "pending" }`
+→ `create_task` `{ workspaceId: "ws-111", planId: "plan-222", title: "Escrever changelog" }`
+→ `create_task` `{ workspaceId: "ws-111", planId: "plan-222", title: "Gravar vídeo demo" }`
+→ `create_task` `{ workspaceId: "ws-111", planId: "plan-222", title: "Agendar post de lançamento" }`
 → `get_plan` `{ workspaceId: "ws-111", planId: "plan-222" }` *(confere os 3 cards)*
 
-**Claude:** Plano "Lançamento v2" criado com 3 cards. *(Lembrete: cards de plano nascem `draft`/`medium`/`sem_prazo` — ajustei status pra `pending`; me diga prioridades/prazos se quiser.)*
+**Claude:** Plano "Lançamento v2" criado com 3 cards (já em `pending`). *(Cards de plano nascem `medium`/`sem_prazo` e ignoram priority/datas/assignee na criação — me diga prioridades/prazos que ajusto via `update_task`/`set_task_schedule`.)*
 
 ---
 

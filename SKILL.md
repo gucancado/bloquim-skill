@@ -41,8 +41,9 @@ e os fluxos. **Schema detalhado de cada tool:** `references/tools.md`.
 ## Convenções essenciais
 
 - **priority:** `low` · `medium` (default) · `high` · `critical`. "urgente"→`critical`, "importante"→`high`.
-- **scheduleMode + datas** (datas em `YYYY-MM-DD`): `ate` (só `dueDate`) · `entre` (`startAt`+`dueDate`) · `em` (dia pontual) · `sem_prazo` · `urgente` (sem datas, pinada no topo).
-- **status:** `pending`/`in_progress`/`completed`/`blocked`/`draft`. `overdue` é derivado. Standalone/workspace: `create_task` já entrega `pending` por default (a tool faz o PATCH pós-criação). ⚠️ **Cards de plano** (`planId`) nascem `draft` — passe `status` no `create_task` ou chame `set_task_status` depois.
+- **scheduleMode + datas** (datas em `YYYY-MM-DD`): `ate` (só `dueDate`) · `entre` (`startAt`+`dueDate`) · `em` (dia pontual) · `sem_prazo` · `urgente` (sem datas, pinada no topo). ⚠️ **Datas só valem com `scheduleMode`** — passar `dueDate`/`startAt` sem ele descarta as datas (default `sem_prazo`).
+- **status:** `pending`/`in_progress`/`completed`/`blocked`/`draft`. `overdue` é derivado. `create_task` entrega `pending` por default em **todos os modos** (a tool faz o PATCH pós-criação, inclusive em cards de plano). O que o modo plano ignora é `priority`/`scheduleMode`/datas/`assignee` — ajuste via `update_task`/`set_task_*` depois.
+- **Scope das listagens:** `list_my_tasks` default `today`; `list_workspace_tasks` default `all`. Ambos aceitam `overdue` no filtro `status`. Pra ver tudo do usuário, passe `scope: 'all'`.
 - **Onde a tarefa vive:** sem `workspaceId` → standalone (Minhas Tarefas, assignee = você). Com `workspaceId` → workspace (assignee customizável). Com `planId` → dentro de um plano.
 - **assignee** (só workspace): `{userId}` | `{email}` (resolve entre membros) | `null` | omitir (= você).
 - **Destrutivas exigem `confirm: true`:** `delete_task`, `clear_task_checklist`, `delete_plan`.
@@ -72,8 +73,10 @@ Transcrições completas em `examples/workflows.md`. Resumo:
 ## Anti-padrões
 
 - ❌ Inventar `taskId`/`workspaceId`/tool. Sempre liste/busque primeiro; o toolset é fixo (35 tools).
-- ❌ Esquecer que **cards de plano** nascem `draft` (vão parecer "sumidos" de listas filtradas por status ativo) — passe `status` ou PATCHe depois.
+- ❌ Passar `dueDate`/`startAt` sem `scheduleMode` em `create_task` — as datas são **descartadas** (default `sem_prazo`). Mande `scheduleMode: 'ate'` (ou `em`/`entre`) no mesmo call.
 - ❌ `set_task_assignee` em tarefa standalone (só workspace).
-- ❌ Omitir `confirm: true` em delete/clear (a chamada falha).
+- ❌ Omitir `confirm: true` em delete/clear/delete_plan (a chamada falha).
+- ❌ `delete_task` num card de plano — cards saem com `createdBy: null` e a API rejeita; limpe via `delete_plan` (cascade) ou `detach_task_from_plan` antes.
+- ❌ Tentar apagar workspace via MCP — não existe `delete_workspace` (criação é one-way; apague pela UI).
 - ❌ Esperar paginação em `search_tasks` (trunca em 20 — refine a query).
 - ❌ Criar tarefa sem confirmação quando o usuário só comentou algo (respeite preview-then-confirm).
