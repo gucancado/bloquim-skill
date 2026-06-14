@@ -27,6 +27,11 @@ não o duplica.
 > Modo stdio (legado, auto-hospedado) usa JWT do backend em vez de OAuth — só relevante
 > se você rodar o server localmente.
 
+> **Cache do conector:** clientes cacheiam os textos das tools no momento do registro (DCR).
+> Se a description de alguma tool parecer desatualizada após uma atualização do servidor,
+> re-vincule o conector (remover + adicionar de novo) pra puxar a versão atual. Isso não
+> afeta o comportamento, só o texto exibido.
+
 ## Instalar a skill
 
 **Via skills CLI:**

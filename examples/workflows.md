@@ -31,7 +31,7 @@ Transcrições curtas dos fluxos-âncora. `→` indica chamada de tool. Os IDs s
 → `create_task` `{ workspaceId: "ws-111", planId: "plan-222", title: "Agendar post de lançamento" }`
 → `get_plan` `{ workspaceId: "ws-111", planId: "plan-222" }` *(confere os 3 cards)*
 
-**Claude:** Plano "Lançamento v2" criado com 3 cards (já em `pending`). *(Cards de plano nascem `medium`/`sem_prazo`. Ajusto `priority`/título via `update_task`. ⚠️ Pra dar prazo, hoje evite `set_task_schedule` direto no card — há bug de backend (HTTP 500); o caminho seguro é criar a task com o prazo e `attach_task_to_plan`.)*
+**Claude:** Plano "Lançamento v2" criado com 3 cards (já em `pending`). *(Cards nascem `medium`/`sem_prazo`; me diga prioridades/prazos que ajusto direto no card via `update_task`/`set_task_schedule`. Se quiser um assignee específico num card, dá pra criar a task standalone-de-workspace já pronta e `attach_task_to_plan`.)*
 
 ---
 

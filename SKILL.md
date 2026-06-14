@@ -77,7 +77,6 @@ Transcrições completas em `examples/workflows.md`. Resumo:
 - ❌ `set_task_assignee` em tarefa standalone (só workspace).
 - ❌ Omitir `confirm: true` em delete/clear/delete_plan (a chamada falha).
 - ⚠️ Cards de plano nascem com `createdBy: null`. `delete_task` neles é rejeitado **só** se você não for criador/admin — como **admin** do workspace o delete passa (bypass). Pra limpar um plano inteiro prefira `delete_plan` (cascade); pra preservar tarefas, `detach_task_from_plan`.
-- ❌ Agendar um **card de plano** (`set_task_schedule`, ou `update_task` com `scheduleMode`+datas) — **bug de backend em aberto**: retorna HTTP 500 e deixa estado parcial (o schedule pode gravar mas o card fica dessincronizado). Em card de plano hoje só é seguro ajustar `priority`/`title`/`description` via `update_task`. Pra dar prazo, crie a task standalone-de-workspace **com** o prazo e use `attach_task_to_plan`.
 - ❌ Tentar apagar workspace via MCP — não existe `delete_workspace` (criação é one-way; apague pela UI).
 - ❌ Esperar paginação em `search_tasks` (trunca em 20 — refine a query).
 - ❌ Criar tarefa sem confirmação quando o usuário só comentou algo (respeite preview-then-confirm).
