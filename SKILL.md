@@ -58,7 +58,8 @@ não a reescreva aqui. Resumo operacional:
   **após confirmação** (exceto se ele pediu modo automático). Máx. 1 oferta; se recusar, silêncio.
 - **Não** ofereça em perguntas puras, hipóteses ou coisas já feitas.
 - **Atalhos (prompts MCP / slash commands)** expostos pelo server: `capturar_tarefa`,
-  `extrair_tarefas_de_reuniao`, `revisao_minhas_tarefas`. Prefira-os quando couber.
+  `extrair_tarefas_de_reuniao`, `revisao_minhas_tarefas` e `tutorial` (onboarding;
+  arg opcional `topico` = tarefas/planos/reuniao). Prefira-os quando couber.
 
 ## Workflows-âncora
 

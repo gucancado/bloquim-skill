@@ -80,6 +80,19 @@ marca a tarefa "editar vídeo" como urgente
 move a tarefa "editar vídeo" pro workspace Y
 ```
 
+## 9. Onboarding guiado (`/tutorial`)
+
+Tour embutido no server — explica captura proativa, os prompts e as convenções,
+sem precisar ler doc. Bom 1º passo pra quem acabou de conectar.
+
+```
+/tutorial
+```
+```
+/tutorial topico=reuniao
+```
+Arg opcional `topico` (`tarefas` / `planos` / `reuniao`) foca a seção; vazio = tour completo.
+
 ---
 
 ## Convenções que ajudam (e evitam erro)
@@ -99,5 +112,6 @@ move a tarefa "editar vídeo" pro workspace Y
 
 1. **Conectar o conector** — `https://mcp.bloquim.beeads.com.br/mcp` + login (ver README).
 2. **Instalar a skill** `bloquim` → o agente já sabe operar tudo.
-3. **Primeiro contato:** rodar `/revisao_minhas_tarefas` e jogar uma ata em `/extrair_tarefas_de_reuniao`.
-4. **Mensagem-chave:** "não decore tool nenhuma — fale natural; a captura proativa e os 3 prompts fazem o resto."
+3. **Tour guiado:** rodar `/tutorial` (ou `/tutorial topico=reuniao` pra focar) — onboarding embutido que explica captura proativa, prompts e convenções.
+4. **Primeiro contato:** rodar `/revisao_minhas_tarefas` e jogar uma ata em `/extrair_tarefas_de_reuniao`.
+5. **Mensagem-chave:** "não decore tool nenhuma — fale natural; a captura proativa e os 4 prompts fazem o resto."

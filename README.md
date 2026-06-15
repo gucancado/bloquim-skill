@@ -19,8 +19,9 @@ A skill **assume que o conector MCP já está ativo**. Para conectar:
 3. URL: `https://mcp.bloquim.beeads.com.br/mcp`
 4. Salvar → **Vincular** → faça login com sua conta Bloquim (OAuth 2.0).
 
-O server expõe as 35 tools + 3 prompts (slash commands): `capturar_tarefa`,
-`extrair_tarefas_de_reuniao`, `revisao_minhas_tarefas`. Ele também injeta a política de
+O server expõe as 35 tools + 4 prompts (slash commands): `capturar_tarefa`,
+`extrair_tarefas_de_reuniao`, `revisao_minhas_tarefas` e `tutorial` (onboarding
+embutido; arg opcional `topico` = tarefas/planos/reuniao). Ele também injeta a política de
 captura proativa de tarefas no handshake — esta skill **referencia** esse comportamento,
 não o duplica.
 
